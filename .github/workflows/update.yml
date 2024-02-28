@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -16,25 +16,14 @@ jobs:
       - name: Prepare
         run: |
           sudo apt-get update
-          mkdir -p dist
-          curl -LR -o- "https://raw.githubusercontent.com/github/gitignore/main/C%2B%2B.gitignore" | sed 's/\r//' | sort -u | grep -vE '^#|^$' >> dist/gitignore
-          curl -LR -o- "https://raw.githubusercontent.com/github/gitignore/main/C.gitignore" | sed 's/\r//' | sort -u | grep -vE '^#|^$' >> dist/gitignore
-          curl -LR -o- "https://raw.githubusercontent.com/github/gitignore/main/Global/Archives.gitignore" | sed 's/\r//' | sort -u | grep -vE '^#|^$' >> dist/gitignore
-          curl -LR -o- "https://raw.githubusercontent.com/github/gitignore/main/Global/Linux.gitignore" | sed 's/\r//' | sort -u | grep -vE '^#|^$' >> dist/gitignore
-          curl -LR -o- "https://raw.githubusercontent.com/github/gitignore/main/Global/macOS.gitignore" | sed 's/\r//' | sort -u | grep -vE '^#|^$' >> dist/gitignore
-          curl -LR -o- "https://raw.githubusercontent.com/github/gitignore/main/Global/Windows.gitignore" | sed 's/\r//' | sort -u | grep -vE '^#|^$' >> dist/gitignore
-          curl -LR -o- "https://raw.githubusercontent.com/github/gitignore/main/Go.gitignore" | sed 's/\r//' | sort -u | grep -vE '^#|^$' >> dist/gitignore
-          curl -LR -o- "https://raw.githubusercontent.com/seiflotfy/cuckoofilter/master/.gitignore" | sed 's/\r//' | sort -u | grep -vE '^#|^$' >> dist/gitignore
-          echo -e "!go.mod\n!go.sum\n.idea/" >> dist/gitignore
-          sort -u dist/gitignore | grep -vE '^#|^$' > .gitignore
-          rm -rf dist
+          rm -rf .github/workflows/delete.yml
           find -name '*test.go' | xargs rm -rf
-          find -name 'go.mod' | xargs perl -pi -e 's|go 1.*|go 1.20|g'
           find -name 'go.mod' | xargs perl -pi -e 's|/seiflotfy/cuckoofilter|/luoluodaduan/cuckoofilter|g'
+          find -name 'go.mod' | xargs perl -pi -e 's|go 1.*|go 1.22|g'
           find -name '*.go' | xargs perl -pi -e 's|/seiflotfy/cuckoofilter|/luoluodaduan/cuckoofilter|g'
 
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version-file: './go.mod'
           check-latest: true
@@ -42,10 +31,10 @@ jobs:
       - name: Update
         run: |
           go install mvdan.cc/gofumpt@master
-          go install github.com/daixiang0/gci@latest
-          find -name '*.go' | xargs gofumpt -l -w
+          go install github.com/daixiang0/gci@master
+          find -name '*.go' | xargs gofumpt -e -l -w
           find -name '*.go' | xargs gci write -s standard -s default
-          go get -u all
+          go get -u
           go mod tidy
 
       - name: Commit Files
