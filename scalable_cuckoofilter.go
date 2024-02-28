@@ -13,7 +13,7 @@ const (
 type ScalableCuckooFilter struct {
 	filters    []*Filter
 	loadFactor float32
-	//when scale(last filter size * loadFactor >= capacity) get new filter capacity
+	// when scale(last filter size * loadFactor >= capacity) get new filter capacity
 	scaleFactor func(capacity uint) uint
 }
 
@@ -25,10 +25,11 @@ type Store struct {
 }
 
 /*
- by default option the grow capacity is:
- capacity , total
- 4096  4096
- 8192  12288
+	by default option the grow capacity is:
+	capacity , total
+	4096  4096
+	8192  12288
+
 16384  28672
 32768  61440
 65536  126,976
@@ -96,7 +97,6 @@ func (sf *ScalableCuckooFilter) Count() uint {
 		sum += filter.count
 	}
 	return sum
-
 }
 
 func (sf *ScalableCuckooFilter) Encode() []byte {
@@ -151,7 +151,6 @@ func DecodeScalableFilter(fBytes []byte) (*ScalableCuckooFilter, error) {
 		instance.filters[i] = filter
 	}
 	return instance, nil
-
 }
 
 func configure(sfilter *ScalableCuckooFilter) {
